@@ -7,6 +7,6 @@ build:
     - docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
   script:
     - KEYS=$(cat keys.txt)
-    - BUILD=$(docker build --build-arg KEYS=${KEYS} -q --no-cache .)
+    - BUILD=$(docker build --build-arg KEYS="${KEYS}" -q --no-cache .)
     - docker tag ${BUILD} jitesoft/lighttpd:latest
     - docker push jitesoft/lighttpd:latest
