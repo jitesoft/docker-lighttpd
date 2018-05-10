@@ -1,11 +1,12 @@
+
 build:
+  stage: build
   image: docker:latest
   before_script:
-    - apk add --no-cache curl grep
+    - apk add --no-cache curl
     - docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
-  script:
-    - docker build -t jitesoft/lighttpd:latest \
-      --build-arg VERSION=$(curl -s https://download.lighttpd.net/lighttpd/releases-1.4.x/ 2>&1 | grep -oPm1 "(?<=lighttpd-)(1.4.[0-9]+)" | tail -n 1) \
-      --build-arg KEYS=$(cat keys.txt) \
-      --no-cache .
+  scripts:
+    - KEYS=$(cat keys.txt)
+    - VERSION=$(curl -s https://download.lighttpd.net/lighttpd/releases-1.4.x/ | tac | tac | grep -oPm1 "(?<=lighttpd-)(1.4.[0-9]+)" | tail -n 1)
+    - docker build -t jitesoft/lighttpd --build-arg VERSION=${VERSION} --build-arg KEYS=${KEYS} --no-cache .
     - docker push jitesoft/lighttpd:latest
