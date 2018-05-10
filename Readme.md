@@ -11,7 +11,8 @@ Lighttpd is open source under the reviced BSD license.
 
 ## The image
 
-This image contains lighttpd built from source, it runs on the alpine linux distro, making it a small image keeping the disk, cpu and ram at a minimum!  
+This image contains lighttpd built from source, it runs on the alpine linux distro, making it a small image keeping the disk, cpu and ram at a minimum!
+
 The default configuration is a very basic config and you should probably [create your own](https://redmine.lighttpd.net/projects/lighttpd/wiki) instead!
 
 ## Environment variables
