@@ -1,7 +1,6 @@
 FROM alpine:3.7
 LABEL maintainer="Johannes Tegnér <johannes@jitesoft.com>"
 
-ARG VERSION=1.4.49
 ARG KEYS="6FE198C8 \
 42909B84 \
 1E95BAD7"
@@ -10,7 +9,8 @@ ENV PORT=80 \
     SERVER_NAME="localhost" \
     SERVER_ROOT="/var/www/html/"
 
-RUN apk add --no-cache --virtual .trash curl gnupg \
+RUN apk add --no-cache --virtual .trash curl grep gnupg \
+    && VERSION=$(curl -s https://download.lighttpd.net/lighttpd/releases-1.4.x/ | tac | tac | grep -oPm1 "(?<=lighttpd-)(1.4.[0-9]+)" | tail -n 1) \
     && curl -OsS https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-${VERSION}.tar.xz \
             -OsS https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-${VERSION}.tar.xz.asc \
             -OsS https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-${VERSION}.sha256sum \
@@ -33,4 +33,4 @@ RUN apk add --no-cache --virtual .trash curl gnupg \
 
 ADD lighttpd.conf /etc/lighttpd/lighttpd.conf
 
-CMD ["lighttpd", "-D", "-f", ${CONFIG_FILE}]
+CMD ["lighttpd", "-D", "-f", "/etc/lighttpd/lighttpd.conf"]

@@ -7,6 +7,5 @@ build:
     - docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
   script:
     - KEYS=$(cat keys.txt)
-    - VERSION=$(curl -s https://download.lighttpd.net/lighttpd/releases-1.4.x/ | tac | tac | grep -oPm1 "(?<=lighttpd-)(1.4.[0-9]+)" | tail -n 1)
-    - docker build -t jitesoft/lighttpd --build-arg VERSION=${VERSION} --build-arg KEYS=${KEYS} --no-cache .
+    - docker build -t jitesoft/lighttpd --build-arg KEYS=${KEYS} --no-cache .
     - docker push jitesoft/lighttpd:latest
