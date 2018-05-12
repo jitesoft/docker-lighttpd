@@ -9,7 +9,8 @@ ENV PORT=80 \
     SERVER_NAME="localhost" \
     SERVER_ROOT="/var/www/html/"
 
-RUN apk add --no-cache --virtual .trash curl grep gnupg \
+RUN addgroup -g 1000 -S lighttpd && adduser -u 1000 -S lighttpd -G lighttpd \
+    && apk add --no-cache --virtual .trash curl grep gnupg \
     && VERSION=$(curl -s https://download.lighttpd.net/lighttpd/releases-1.4.x/ | tac | tac | grep -oPm1 "(?<=lighttpd-)(1.4.[0-9]+)" | tail -n 1) \
     && curl -OsS https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-${VERSION}.tar.xz \
             -OsS https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-${VERSION}.tar.xz.asc \
@@ -24,8 +25,8 @@ RUN apk add --no-cache --virtual .trash curl grep gnupg \
     && tar -xf lighttpd-${VERSION}.tar.xz \
     && rm lighttpd-${VERSION}.tar.xz.asc lighttpd-${VERSION}.sha256sum lighttpd-${VERSION}.tar.xz \
     && apk del .trash \
-    && apk add --no-cache --virtual .build-deps build-base flex  automake autoconf \
-    && apk add --no-cache --virtual .req pcre-dev libressl-dev zlib-dev bzip2-dev lua5.3-dev openldap-dev libxml2-dev sqlite-dev libev-dev gamin-dev \
+    && apk add --no-cache --virtual .build-deps build-base flex  automake autoconf libressl-dev zlib-dev bzip2-dev lua5.3-dev openldap-dev libxml2-dev sqlite-dev libev-dev gamin-dev \
+    && apk add --no-cache --virtual .req pcre-dev \
     && ./lighttpd-${VERSION}/configure --with-lua --with-openssl --with-ldap \
     && make lighttpd-${VERSION} \
     && make install lighttpd-${VERSION} \
