@@ -24,7 +24,8 @@ RUN apk add --no-cache --virtual .trash curl grep gnupg \
     && tar -xf lighttpd-${VERSION}.tar.xz \
     && rm lighttpd-${VERSION}.tar.xz.asc lighttpd-${VERSION}.sha256sum lighttpd-${VERSION}.tar.xz \
     && apk del .trash \
-    && apk add --no-cache --virtual .build-deps build-base flex pcre-dev libressl-dev zlib-dev  bzip2-dev lua5.3-dev automake autoconf openldap-dev libxml2-dev sqlite-dev libev-dev gamin-dev \
+    && apk add --no-cache --virtual .build-deps build-base flex  automake autoconf \
+    && apk add --no-cache --virtual .req pcre-dev libressl-dev zlib-dev bzip2-dev lua5.3-dev openldap-dev libxml2-dev sqlite-dev libev-dev gamin-dev \
     && ./lighttpd-${VERSION}/configure --with-lua --with-openssl --with-ldap \
     && make lighttpd-${VERSION} \
     && make install lighttpd-${VERSION} \
