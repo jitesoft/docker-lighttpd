@@ -1,12 +1,23 @@
+stages:
+    - lighttpd
+    - fpm
 
-build:
-  stage: build
+build:lighttpd:
+  stage: lighttpd
   image: docker:latest
   before_script:
     - echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USER} --password-stdin
   script:
     - KEYS=$(cat keys.txt)
-    - docker build -t jitesoft/lighttpd --build-arg KEYS="${KEYS}" -q --no-cache .
+    - docker build -t jitesoft/lighttpd --build-arg KEYS="${KEYS}" --no-cache .
     - docker push jitesoft/lighttpd:latest
-    - docker build -t jitesoft/lighttpd:fpm -q --no-cache -f cgi/Dockerfile
+
+
+build:lighttpd:fpm:
+  stage: fpm
+  image: docker:latest
+  before_script:
+    - echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USER} --password-stdin
+  script:
+    - docker build -t jitesoft/lighttpd:fpm --no-cache cgi
     - docker push jitesoft/lighttpd:fpm
