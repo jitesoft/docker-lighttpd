@@ -25,7 +25,7 @@ RUN addgroup -g 1000 -S lighttpd && adduser -u 1000 -S lighttpd -G lighttpd \
     && tar -xf lighttpd-${VERSION}.tar.xz \
     && rm lighttpd-${VERSION}.tar.xz.asc lighttpd-${VERSION}.sha256sum lighttpd-${VERSION}.tar.xz \
     && apk del .trash \
-    && apk add --no-cache --virtual .build-deps build-base flex  automake autoconf libressl-dev zlib-dev bzip2-dev lua5.3-dev openldap-dev libxml2-dev sqlite-dev libev-dev gamin-dev \
+    && apk add --no-cache --virtual .build-deps build-base flex automake autoconf libressl-dev zlib-dev bzip2-dev lua5.3-dev openldap-dev libxml2-dev sqlite-dev libev-dev gamin-dev \
     && apk add --no-cache --virtual .req pcre-dev \
     && ./lighttpd-${VERSION}/configure --with-lua --with-openssl --with-ldap \
     && make lighttpd-${VERSION} \
