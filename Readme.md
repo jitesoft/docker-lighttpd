@@ -20,10 +20,19 @@ The default configuration is a very basic config and you should probably [create
 The following environment variables are used and exposed in the dockerfile:
 
 ```txt
-PORT
-SERVER_NAME
-SERVER_ROOT
-CONFIG_FILE
+PORT=80
+SERVER_NAME=localhost
+SERVER_ROOT=/var/www/html
+CONFIG_FILE=/etc/lighttpd/lighttpd.conf
 ```
 
 The default configuration file is located at `/etc/lighttpd/lighttpd.conf` but your own can be included in whatever way you wish. If you are not replacing the default file you can use the  `CONFIG_FILE` variable to point to your own file and ignore the default. `PORT` 80 is exposed and used by default, if changed, the default configuration will use the port defined in the env variable but you will have to expose it by yourself. `SERVER_NAME` defaults to localhost. `SERVER_ROOT` defaults to `/var/www/html`.
+
+## FPM tag
+
+The `fpm` tagged image have mod_fcgi_fpm enabeled with env variables set to enable connection to a php-fpm container. The lighttpd container will await the fpm container before starting. This image still requires the same volumes as the php fpm container (the files to serve).
+
+```txt
+FPM_CONTAINER="fpm"
+FPM_PORT=9000
+```

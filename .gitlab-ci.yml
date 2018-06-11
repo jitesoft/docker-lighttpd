@@ -8,3 +8,5 @@ build:
     - KEYS=$(cat keys.txt)
     - docker build -t jitesoft/lighttpd --build-arg KEYS="${KEYS}" -q --no-cache .
     - docker push jitesoft/lighttpd:latest
+    - docker build -t jitesoft/lighttpd:fpm -q --no-cache -f cgi/Dockerfile
+    - docker push jitesoft/lighttpd:fpm

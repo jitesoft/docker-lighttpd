@@ -7,7 +7,8 @@ ARG KEYS="6FE198C8 \
 
 ENV PORT=80 \
     SERVER_NAME="localhost" \
-    SERVER_ROOT="/var/www/html/"
+    SERVER_ROOT="/var/www/html/" \
+    CONFIG_FILE="/etc/lighttpd/lighttpd.conf"
 
 RUN addgroup -g 1000 -S lighttpd && adduser -u 1000 -S lighttpd -G lighttpd \
     && apk add --no-cache --virtual .trash curl grep gnupg \
@@ -33,6 +34,6 @@ RUN addgroup -g 1000 -S lighttpd && adduser -u 1000 -S lighttpd -G lighttpd \
     && rm -rf lighttpd-${VERSION} \
     && apk del .build-deps
 
-ADD lighttpd.conf /etc/lighttpd/lighttpd.conf
+ADD --chown=lighttpd:lighttpd lighttpd.conf /etc/lighttpd/lighttpd.conf
 
-CMD ["lighttpd", "-D", "-f", "/etc/lighttpd/lighttpd.conf"]
+CMD ["lighttpd", "-D", "-f", "${CONFIG_FILE}"]
