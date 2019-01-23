@@ -5,6 +5,8 @@ stages:
 build:lighttpd:
   stage: lighttpd
   image: docker:latest
+  services:
+    - docker:dind
   before_script:
     - echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USER} --password-stdin
   script:
@@ -16,6 +18,8 @@ build:lighttpd:
 build:lighttpd:fpm:
   stage: fpm
   image: docker:latest
+  services:
+    - docker:dind
   before_script:
     - echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USER} --password-stdin
   script:
