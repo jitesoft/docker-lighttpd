@@ -11,7 +11,7 @@ build:lighttpd:
     - echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USER} --password-stdin
   script:
     - KEYS=$(cat keys.txt)
-    - docker build -t jitesoft/lighttpd --build-arg KEYS="${KEYS}" --no-cache .
+    - docker build -t jitesoft/lighttpd --build-arg KEYS="${KEYS}" --network host --no-cache .
     - docker push jitesoft/lighttpd:latest
 
 
@@ -23,5 +23,5 @@ build:lighttpd:fpm:
   before_script:
     - echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USER} --password-stdin
   script:
-    - docker build -t jitesoft/lighttpd:fpm --no-cache cgi
+    - docker build -t jitesoft/lighttpd:fpm --network host --no-cache cgi
     - docker push jitesoft/lighttpd:fpm
