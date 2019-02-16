@@ -1,4 +1,4 @@
-# !/usr/bin/sh
+#!/usr/bin/sh
 
 echo "Awaiting CGI container..."
 while ! nc -z ${FPM_CONTAINER} ${FPM_PORT}; do sleep 5; done
