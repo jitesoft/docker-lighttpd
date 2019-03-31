@@ -36,4 +36,4 @@ RUN addgroup -g 1000 -S lighttpd && adduser -u 1000 -S lighttpd -G lighttpd \
 
 ADD --chown=lighttpd:lighttpd lighttpd.conf /etc/lighttpd/lighttpd.conf
 
-CMD ["lighttpd", "-D", "-f", "${CONFIG_FILE}"]
+CMD ["lighttpd", "-D", "-f", "$CONFIG_FILE"]
