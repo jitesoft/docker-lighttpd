@@ -1,4 +1,4 @@
-FROM alpine:3.7
+FROM registry.gitlab.com/jitesoft/dockerfiles/alpine:latest
 LABEL maintainer="Johannes Tegnér <johannes@jitesoft.com>"
 
 ARG KEYS="6FE198C8"
