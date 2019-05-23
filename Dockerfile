@@ -12,7 +12,6 @@ ENV PORT=80 \
 ADD startup.sh /startup
 RUN addgroup -g 1000 -S lighttpd && adduser -u 1000 -S lighttpd -G lighttpd \
     && apk add --no-cache --virtual .trash curl grep gnupg \
-    && VERSION=$(curl -s https://download.lighttpd.net/lighttpd/releases-1.4.x/ | tac | tac | grep -oPm1 "(?<=lighttpd-)(1.4.[0-9]+)" | tail -n 1) \
     && curl -OsS https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-${VERSION}.tar.xz \
             -OsS https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-${VERSION}.tar.xz.asc \
             -OsS https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-${VERSION}.sha256sum \
