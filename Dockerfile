@@ -1,6 +1,6 @@
 FROM registry.gitlab.com/jitesoft/dockerfiles/alpine:latest
 
-ARG KEYS="6FE198C8" \
+ARG KEYS="6FE198C8"
 ARG VERSION="1.4.53"
 
 ENV PORT=80 \
