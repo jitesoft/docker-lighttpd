@@ -4,7 +4,7 @@ stages:
 
 variables:
   IMAGE_NAME: "jitesoft/lighttpd"
-  VERSION: 1.4.53
+  VERSION: 1.4.49
 
 build:lighttpd:
   stage: lighttpd
@@ -22,12 +22,10 @@ build:lighttpd:
     - |
       for tag in $TAGS; do
         docker tag ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} ${IMAGE_NAME}:${tag}
-        docker tag ${CI_REGISTRY_IMAGE}:${tag}
+        docker tag ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} ${CI_REGISTRY_IMAGE}:${tag}
         docker push ${IMAGE_NAME}:${tag}
         docker push ${CI_REGISTRY_IMAGE}:${tag}
       done
-    - docker push jitesoft/lighttpd:latest
-
 
 build:lighttpd:fpm:
   stage: fpm
@@ -44,7 +42,7 @@ build:lighttpd:fpm:
     - |
       for tag in $TAGS; do
         docker tag ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} ${IMAGE_NAME}:${tag}
-        docker tag ${CI_REGISTRY_IMAGE}:${tag}
+        docker tag ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} ${CI_REGISTRY_IMAGE}:${tag}
         docker push ${IMAGE_NAME}:${tag}
         docker push ${CI_REGISTRY_IMAGE}:${tag}
       done
