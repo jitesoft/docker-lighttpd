@@ -1,12 +1,13 @@
 FROM registry.gitlab.com/jitesoft/dockerfiles/alpine:latest
-LABEL maintainer="Johannes Tegnér <johannes@jitesoft.com>"
 
-ARG KEYS="6FE198C8"
+ARG KEYS="6FE198C8" \
+ARG VERSION=""
 
 ENV PORT=80 \
     SERVER_NAME="localhost" \
     SERVER_ROOT="/var/www/html/" \
-    CONFIG_FILE="/etc/lighttpd/lighttpd.conf"
+    CONFIG_FILE="/etc/lighttpd/lighttpd.conf" \
+    SKIP_HEALTHCHECK="false"
 
 ADD startup.sh /startup
 RUN addgroup -g 1000 -S lighttpd && adduser -u 1000 -S lighttpd -G lighttpd \
@@ -35,5 +36,9 @@ RUN addgroup -g 1000 -S lighttpd && adduser -u 1000 -S lighttpd -G lighttpd \
     && chmod +x /startup
 
 ADD --chown=lighttpd:lighttpd lighttpd.conf /etc/lighttpd/lighttpd.conf
-
+ADD ./healthcheck.sh /
+RUN chmod +x /healthcheck.sh
+# For healthcheck to return healty a response is needed from the root of the content: `127.0.0.1:80`
+# If healthcheck should be disabled, set the env variable `SKIP_HEALTHCHECK` to "true".
+HEALTHCHECK --interval=1m --timeout=5s --start-period=2m CMD /healthcheck.sh
 CMD /startup

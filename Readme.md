@@ -24,9 +24,14 @@ PORT=80
 SERVER_NAME=localhost
 SERVER_ROOT=/var/www/html
 CONFIG_FILE=/etc/lighttpd/lighttpd.conf
+SKIP_HEALTHCHECK=false
 ```
 
 The default configuration file is located at `/etc/lighttpd/lighttpd.conf` but your own can be included in whatever way you wish. If you are not replacing the default file you can use the  `CONFIG_FILE` variable to point to your own file and ignore the default. `PORT` 80 is exposed and used by default, if changed, the default configuration will use the port defined in the env variable but you will have to expose it by yourself. `SERVER_NAME` defaults to localhost. `SERVER_ROOT` defaults to `/var/www/html`.
+
+The `SKIP_HEALTHCHECK` flag will, if set to `"true"` mark the container as healthy as long as it is running, while if left default or set to `"false"` will run a query on
+the `127.0.0.1:${PORT}` endpoint every minute.  
+It's exposed as an environment due to the fact that a 404 will be reported as an error and exit the health check with a none-0 exit code.
 
 ## FPM tag
 

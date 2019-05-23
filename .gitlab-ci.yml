@@ -2,16 +2,30 @@ stages:
     - lighttpd
     - fpm
 
+variables:
+  IMAGE_NAME: "jitesoft/lighttpd"
+
 build:lighttpd:
   stage: lighttpd
   image: docker:latest
   services:
     - docker:dind
   before_script:
+    - apk add --no-cache grep curl
     - echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USER} --password-stdin
+    - echo ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token registry.gitlab.com --password-stdin
   script:
+    - VERSION=$(curl -s https://download.lighttpd.net/lighttpd/releases-1.4.x/ | tac | tac | grep -oPm1 "(?<=lighttpd-)(1.4.[0-9]+)" | tail -n 1)
     - KEYS=$(cat keys.txt)
-    - docker build -t jitesoft/lighttpd --build-arg KEYS="${KEYS}" --network host --no-cache .
+    - docker build -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} --label="lighttpd.version=${VERSION}" --build-arg KEYS="${KEYS}" --build-arg VERSION=${VERSION} --no-cache .
+    - TAGS="latest ${VERSION}"
+    - |
+      for tag in $TAGS; do
+        docker tag ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} ${image_name}:${tag}
+        docker tag ${CI_REGISTRY_IMAGE}:${tag}
+        docker push ${image_name}:${tag}
+        docker push ${CI_REGISTRY_IMAGE}:${tag}
+      done
     - docker push jitesoft/lighttpd:latest
 
 
@@ -21,7 +35,17 @@ build:lighttpd:fpm:
   services:
     - docker:dind
   before_script:
+    - apk add --no-cache grep curl
     - echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USER} --password-stdin
+    - echo ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token registry.gitlab.com --password-stdin
   script:
-    - docker build -t jitesoft/lighttpd:fpm --network host --no-cache cgi
-    - docker push jitesoft/lighttpd:fpm
+    - VERSION=$(curl -s https://download.lighttpd.net/lighttpd/releases-1.4.x/ | tac | tac | grep -oPm1 "(?<=lighttpd-)(1.4.[0-9]+)" | tail -n 1)
+    - docker build -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} --label="lighttpd.fpm=active" --network host --no-cache cgi
+    - TAGS="latest-fpm ${VERSION}-fpm fpm"
+    - |
+      for tag in $TAGS; do
+        docker tag ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} ${image_name}:${tag}
+        docker tag ${CI_REGISTRY_IMAGE}:${tag}
+        docker push ${image_name}:${tag}
+        docker push ${CI_REGISTRY_IMAGE}:${tag}
+      done
