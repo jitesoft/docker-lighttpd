@@ -4,7 +4,7 @@ stages:
 
 variables:
   IMAGE_NAME: "jitesoft/lighttpd"
-  VERSION: 1.4.49
+  VERSION: 1.4.53
 
 build:lighttpd:
   stage: lighttpd
