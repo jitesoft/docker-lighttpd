@@ -15,7 +15,7 @@ build:lighttpd:
     - echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USER} --password-stdin
     - echo ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token registry.gitlab.com --password-stdin
   script:
-    - VERSION=$(curl -s https://download.lighttpd.net/lighttpd/releases-1.4.x/ | grep -oPsm1 "(?<=lighttpd-)(1.4.[0-9]+)" | head -1)
+    - VERSION=$(curl -s https://download.lighttpd.net/lighttpd/releases-1.4.x/ | grep -oPs -m1 "(?<=lighttpd-)(1.4.[0-9]+)" | head -1 | xargs echo $1)
     - KEYS=$(cat keys.txt)
     - docker build -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} --label="lighttpd.version=${VERSION}" --build-arg KEYS="${KEYS}" --build-arg VERSION=${VERSION} --no-cache .
     - TAGS="latest ${VERSION}"
@@ -39,7 +39,7 @@ build:lighttpd:fpm:
     - echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USER} --password-stdin
     - echo ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token registry.gitlab.com --password-stdin
   script:
-    - VERSION=$(curl -s https://download.lighttpd.net/lighttpd/releases-1.4.x/ | grep -oPsm1 "(?<=lighttpd-)(1.4.[0-9]+)" | head -1)
+    - VERSION=$(curl -s https://download.lighttpd.net/lighttpd/releases-1.4.x/ | grep -oPs -m1 "(?<=lighttpd-)(1.4.[0-9]+)" | head -1 | xargs echo $1)
     - docker build -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} --label="lighttpd.fpm=active" --network host --no-cache cgi
     - TAGS="latest-fpm ${VERSION}-fpm fpm"
     - |
