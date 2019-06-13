@@ -7,10 +7,16 @@ Jitesoft takes no responsibility for how you use the image._
 
 ## Tags
 
-* [`latest`, `1.4.53`](https://gitlab.com/jitesoft/dockerfiles/lighttpd/blob/master/Dockerfile)
-* [`1.4.49`](https://gitlab.com/jitesoft/dockerfiles/lighttpd/blob/master/Dockerfile])
-* [`fpm`, `latest-fpm`, `1.4.49-fpm`](https://gitlab.com/jitesoft/dockerfiles/lighttpd/blob/master/cgi/Dockerfile)
-* [`1.4.49-fpm`](https://gitlab.com/jitesoft/dockerfiles/lighttpd/blob/master/cgi/Dockerfile)
+* `latest`, `1.4.54`
+* `1.4.53`
+* `1.4.49`
+* `fpm`, `latest-fpm`, `1.4.54`
+* `1.4.53-fpm`
+* `1.4.49-fpm`
+
+Dockerfiles can be found at:  
+[fpm](https://gitlab.com/jitesoft/dockerfiles/lighttpd/blob/master/cgi/Dockerfile)  
+[none-fpm](https://gitlab.com/jitesoft/dockerfiles/lighttpd/blob/master/Dockerfile)
 
 ## What is Lighttpd?
 
