@@ -17,7 +17,7 @@ build:lighttpd:
     - echo ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token registry.gitlab.com --password-stdin
   script:
     - KEYS=$(cat keys.txt)
-    - docker build -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} --label="lighttpd.version=${VERSION}" --build-arg KEYS="${KEYS}" --build-arg VERSION=${VERSION} --no-cache .
+    - docker build -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} --label="com.jitesoft.app.lighttpd.version=${VERSION}" --build-arg KEYS="${KEYS}" --build-arg VERSION=${VERSION} --no-cache .
     - TAGS="latest ${VERSION}"
     - |
       for tag in $TAGS; do
@@ -37,7 +37,7 @@ build:lighttpd:fpm:
     - echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USER} --password-stdin
     - echo ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token registry.gitlab.com --password-stdin
   script:
-    - docker build -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} --label="lighttpd.fpm=active" --network host --no-cache cgi
+    - docker build -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} --label="com.jitesoft.app.lighttpd.fpm=active" --network host --no-cache cgi
     - TAGS="latest-fpm ${VERSION}-fpm fpm"
     - |
       for tag in $TAGS; do

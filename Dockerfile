@@ -1,7 +1,15 @@
 FROM registry.gitlab.com/jitesoft/dockerfiles/alpine:latest
-
-ARG KEYS="6FE198C8"
 ARG VERSION="1.4.54"
+ARG KEYS="6FE198C8"
+LABEL maintainer="Johannes Tegnér <johannes@jitesoft.com>" \
+      maintainer.org="Jitesoft" \
+      maintainer.org.uri="https://jitesoft.com" \
+      com.jitesoft.project.repo.type="git" \
+      com.jitesoft.project.repo.uri="https://gitlab.com/jitesoft/dockerfiles/lighttpd" \
+      com.jitesoft.project.repo.issues="https://gitlab.com/jitesoft/dockerfiles/lighttpd/issues" \
+      com.jitesoft.project.registry.uri="registry.gitlab.com/jitesoft/dockerfiles/lighttpd" \
+      com.jitesoft.app.lighttpd.version="${VERSION}"
+
 
 ENV PORT=80 \
     SERVER_NAME="localhost" \

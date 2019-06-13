@@ -1,5 +1,4 @@
 FROM registry.gitlab.com/jitesoft/dockerfiles/lighttpd:latest
-
 ENV FPM_CONTAINER="fpm" \
     FPM_PORT=9000
 

@@ -59,3 +59,7 @@ The lighttpd container will await the fpm container before starting. This image 
 FPM_CONTAINER="fpm"
 FPM_PORT=9000
 ```
+
+### Image labels
+
+This image follows the [Jitesoft image label specification 1.0.0](https://gitlab.com/snippets/1866155).
