@@ -1,5 +1,5 @@
 FROM registry.gitlab.com/jitesoft/dockerfiles/alpine:latest
-ARG VERSION="1.4.54"
+ARG VERSION
 ARG KEYS="6FE198C8"
 LABEL maintainer="Johannes Tegnér <johannes@jitesoft.com>" \
       maintainer.org="Jitesoft" \

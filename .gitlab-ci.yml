@@ -1,6 +1,10 @@
+include:
+  - https://gitlab.com/jitesoft/gitlab-ci-lib/raw/master/container_scan.yml
+
 stages:
     - lighttpd
     - fpm
+    - scan
 
 variables:
   IMAGE_NAME: "jitesoft/lighttpd"
@@ -46,3 +50,9 @@ build:lighttpd:fpm:
         docker push ${IMAGE_NAME}:${tag}
         docker push ${CI_REGISTRY_IMAGE}:${tag}
       done
+
+scan:
+  stage: scan
+  extends: .container_scanning
+  variables:
+    SCANNING_IMAGE_NAME: "${CI_REGISTRY_IMAGE}:latest"
