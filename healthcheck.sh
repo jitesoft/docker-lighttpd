@@ -4,4 +4,4 @@ if [[ ${SKIP_HEALTHCHECK} = "true" ]]; then
     exit 0
 fi
 
-wget --spider -O/dev/null 127.0.0.1:${PORT} || exit 1
+wget --spider -O/dev/null "127.0.0.1:${PORT}" || exit 1

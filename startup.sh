@@ -1,2 +1,2 @@
 #!/bin/ash
-lighttpd -D -f ${CONFIG_FILE}
+lighttpd -D -f "${CONFIG_FILE}"
