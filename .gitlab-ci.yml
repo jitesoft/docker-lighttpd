@@ -31,6 +31,8 @@ build:lighttpd:fpm:
     - build:lighttpd
   stage: fpm
   image: registry.gitlab.com/jitesoft/dockerfiles/docker:latest
+  before_script:
+    - VERSION=$(wget -qO- https://download.lighttpd.net/lighttpd/releases-1.4.x/ | grep -oP "(?<=<a href=\"lighttpd-)([0-9]{0,3}[.][0-9]{0,3}[.][0-9]{0,3})" | sort -r -u - | awk 'NR==1{print $1}')
   script:
     - docker build -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} --label="com.jitesoft.app.lighttpd.fpm=active" --network host --no-cache cgi
     - TAGS="latest-fpm ${VERSION}-fpm fpm"
