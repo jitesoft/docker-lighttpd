@@ -1,22 +1,48 @@
-# lighttpd
+# Lighttpd
 
-Alpine linux with lighttpd built from source.
+
+[![Docker Pulls](https://img.shields.io/docker/pulls/jitesoft/lighttpd.svg)](https://hub.docker.com/r/jitesoft/lighttpd)
+[![Back project](https://img.shields.io/badge/Open%20Collective-Tip%20the%20devs!-blue.svg)](https://opencollective.com/jitesoft-open-source)
+
+Alpine linux with Lighttpd built from source.
 
 _Please take a moment and check so that the configuration file is suitable for your case before using the image in production. 
 Jitesoft takes no responsibility for how you use the image._
 
 ## Tags
 
-* `latest`, `1.4.54`
-* `1.4.53`
-* `1.4.49`
-* `fpm`, `latest-fpm`, `1.4.54`
-* `1.4.53-fpm`
-* `1.4.49-fpm`
+### Docker Hub
 
-Dockerfiles can be found at:  
-[fpm](https://gitlab.com/jitesoft/dockerfiles/lighttpd/blob/master/cgi/Dockerfile)  
-[none-fpm](https://gitlab.com/jitesoft/dockerfiles/lighttpd/blob/master/Dockerfile)
+* `jitesoft/lighttpd`
+    * `latest`, `1.4.54`
+    * `1.4.53`
+    * `1.4.49`
+    * `fpm`, `latest-fpm`, `1.4.54`
+    * `1.4.53-fpm`
+    * `1.4.49-fpm`
+
+### GitLab
+
+* `registry.gitlab.com/jitesoft/dockerfiles/lighttpd`
+    * `latest`, `1.4.54`
+    * `1.4.53`
+    * `1.4.49`
+    * `fpm`, `latest-fpm`, `1.4.54`
+    * `1.4.53-fpm`
+    * `1.4.49-fpm`
+
+### Quay.io
+
+* `quay.io/jitesoft/lighttpd`
+    * `latest`, `1.4.54`
+    * `1.4.53`
+    * `1.4.49`
+    * `fpm`, `latest-fpm`, `1.4.54`
+    * `1.4.53-fpm`
+    * `1.4.49-fpm`
+
+Dockerfiles can be found at [GitLab](https://gitlab.com/jitesoft/dockerfiles/lighttpd/blob/master/cgi/Dockerfile) and
+[GitHub](https://github.com/jitesoft/docker-lighttpd).
 
 ## What is Lighttpd?
 
@@ -63,3 +89,8 @@ FPM_PORT=9000
 ### Image labels
 
 This image follows the [Jitesoft image label specification 1.0.0](https://gitlab.com/snippets/1866155).
+
+## Licenses
+
+This repository is realeased under the [MIT license](https://gitlab.com/jitesoft/dockerfiles/lighttpd/blob/master/LICENSE).  
+You can find the Lighttpd license [here](https://git.lighttpd.net/lighttpd/lighttpd1.4.git/tree/COPYING).
