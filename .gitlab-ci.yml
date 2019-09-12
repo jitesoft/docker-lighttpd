@@ -1,5 +1,5 @@
 include:
-  - https://gitlab.com/jitesoft/gitlab-ci-lib/raw/master/container_scan.yml
+  - https://gitlab.com/jitesoft/gitlab-ci-lib/raw/master/container_scan-v2.yml
 
 stages:
     - lighttpd
@@ -48,7 +48,6 @@ build:lighttpd:fpm:
       done
 
 scan:
-  stage: scan
   needs:
     - build:lighttpd
   extends: .container_scanning
