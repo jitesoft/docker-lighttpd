@@ -30,7 +30,7 @@ build:lighttpd:fpm:
     - TAG_LIST=$(helper taglist "${CI_REGISTRY_IMAGE},jitesoft/lighttpd" "latest-fpm,${VERSION}-fpm,fpm")
     - cd cgi
     - docker buildx build --platform ${PLATFORMS} --progress plain --push ${TAG_LIST} .
-  tags: [ jitesoft, buildx, amd64, arm64, x86, ppc64le, s390x ]
+  tags: [ jitesoft, buildx, protected ]
 
 push:none-multi-arch:
   stage: extra
@@ -43,6 +43,7 @@ push:none-multi-arch:
     - docker pull ${CI_REGISTRY_IMAGE}:fpm
     - helper multitag ${CI_REGISTRY_IMAGE}:latest quay.io/jitesoft/lighttpd:latest-fpm quay.io/jitesoft/lighttpd:${VERSION}-fpm quay.io/jitesoft/lighttpd:fpm
     - helper multipush quay.io/jitesoft/lighttpd:latest-fpm quay.io/jitesoft/lighttpd:${VERSION}-fpm quay.io/jitesoft/lighttpd:fpm
+  tags: [ jitesoft, protected ]
 
 scan:
   needs:
