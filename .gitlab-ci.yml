@@ -47,7 +47,7 @@ download:
     - cd src
     - ./configure --prefix=/usr/local --with-lua --with-openssl --with-ldap
     - make -j4
-    - make install lighttpd-${VERSION}
+    - make install
     - ccache -s
     - $(cd /usr/local && tar -czf /tmp/lighttpd.tar.gz *)
     - cd ..
@@ -86,8 +86,9 @@ build:amd:
     - build:arm
   image: registry.gitlab.com/jitesoft/dockerfiles/misc:latest
   script:
-    - mv startup out/bin/startup
-    - mv healthcheck out/bin/healthcheck
+    - mv startup out/startup
+    - mv healthcheck out/healthcheck
+    - mv lighttpd.conf out/lighttpd.conf
     - VERSION=$(wget -qO- https://download.lighttpd.net/lighttpd/releases-1.4.x/ | grep -oP "(?<=<a href=\"lighttpd-)([0-9]{0,3}[.][0-9]{0,3}[.][0-9]{0,3})" | sort -r -u - | awk 'NR==1{print $1}')
     - TAG_LIST=$(helper taglist "${CI_REGISTRY_IMAGE},jitesoft/lighttpd" "latest,${VERSION}")
     - docker buildx build --platform ${PLATFORMS} --progress plain --push ${TAG_LIST} --build-arg KEYS="${KEYS}" --build-arg VERSION=${VERSION} .
