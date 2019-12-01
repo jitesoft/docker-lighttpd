@@ -79,7 +79,7 @@ build:amd:
     GIT_STRATEGY: none
     ARCH: amd64
 
-.containerize:lighttpd:
+containerize:lighttpd:
   stage: containerize
   needs:
     - build:amd
@@ -92,25 +92,31 @@ build:amd:
     - VERSION=$(wget -qO- https://download.lighttpd.net/lighttpd/releases-1.4.x/ | grep -oP "(?<=<a href=\"lighttpd-)([0-9]{0,3}[.][0-9]{0,3}[.][0-9]{0,3})" | sort -r -u - | awk 'NR==1{print $1}')
     - TAG_LIST=$(helper taglist "${CI_REGISTRY_IMAGE},jitesoft/lighttpd" "latest,${VERSION}")
     - docker buildx build --platform ${PLATFORMS} --progress plain --push ${TAG_LIST} --build-arg KEYS="${KEYS}" --build-arg VERSION=${VERSION} .
-  tags: [ buildx, protected ]
+  tags: [ jitesoft, buildx, protected ]
+  artifacts:
+    paths:
+      - out/version.txt
 
-.build:lighttpd:fpm:
+containerize:lighttpd:fpm:
   needs:
-    - build:lighttpd
+    - containerize:lighttpd
   stage: fpm
   image: registry.gitlab.com/jitesoft/dockerfiles/misc:latest
   script:
-    - VERSION=$(wget -qO- https://download.lighttpd.net/lighttpd/releases-1.4.x/ | grep -oP "(?<=<a href=\"lighttpd-)([0-9]{0,3}[.][0-9]{0,3}[.][0-9]{0,3})" | sort -r -u - | awk 'NR==1{print $1}')
+    - VERSION=$(cat out/version.txt)
     - TAG_LIST=$(helper taglist "${CI_REGISTRY_IMAGE},jitesoft/lighttpd" "latest-fpm,${VERSION}-fpm,fpm")
     - cd cgi
     - docker buildx build --platform ${PLATFORMS} --progress plain --push ${TAG_LIST} .
   tags: [ jitesoft, buildx, protected ]
 
-.push:none-multi-arch:
+push:none-multi-arch:
+  needs:
+    - containerize:lighttpd
+    - containerize:lighttpd:fpm
   stage: extra
   image: registry.gitlab.com/jitesoft/dockerfiles/misc:latest
   script:
-    - VERSION=$(wget -qO- https://download.lighttpd.net/lighttpd/releases-1.4.x/ | grep -oP "(?<=<a href=\"lighttpd-)([0-9]{0,3}[.][0-9]{0,3}[.][0-9]{0,3})" | sort -r -u - | awk 'NR==1{print $1}')
+    - VERSION=$(cat out/version.txt)
     - docker pull ${CI_REGISTRY_IMAGE}:latest
     - helper multitag ${CI_REGISTRY_IMAGE}:latest quay.io/jitesoft/lighttpd:latest quay.io/jitesoft/lighttpd:${VERSION}
     - helper multipush quay.io/jitesoft/lighttpd:latest quay.io/jitesoft/lighttpd:${VERSION}
@@ -119,9 +125,9 @@ build:amd:
     - helper multipush quay.io/jitesoft/lighttpd:latest-fpm quay.io/jitesoft/lighttpd:${VERSION}-fpm quay.io/jitesoft/lighttpd:fpm
   tags: [ jitesoft, protected ]
 
-.scan:
+scan:
   needs:
-    - build:lighttpd
+    - containerize:lighttpd
   extends: .container_scanning
   variables:
     SCANNING_IMAGE_NAME: "${CI_REGISTRY_IMAGE}:latest"
