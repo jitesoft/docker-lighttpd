@@ -4,6 +4,10 @@ include:
 stages:
   - download
   - build
+  - containerize
+  - fpm
+  - extra
+  - scan
 
 download:
   stage: download
@@ -89,7 +93,8 @@ containerize:lighttpd:
     - mv startup out/startup
     - mv healthcheck out/healthcheck
     - mv lighttpd.conf out/lighttpd.conf
-    - VERSION=$(wget -qO- https://download.lighttpd.net/lighttpd/releases-1.4.x/ | grep -oP "(?<=<a href=\"lighttpd-)([0-9]{0,3}[.][0-9]{0,3}[.][0-9]{0,3})" | sort -r -u - | awk 'NR==1{print $1}')
+    - mv conf.d out/
+    - VERSION=$(cat out/version.txt)
     - TAG_LIST=$(helper taglist "${CI_REGISTRY_IMAGE},jitesoft/lighttpd" "latest,${VERSION}")
     - docker buildx build --platform ${PLATFORMS} --progress plain --push ${TAG_LIST} --build-arg KEYS="${KEYS}" --build-arg VERSION=${VERSION} .
   tags: [ jitesoft, buildx, protected ]
@@ -123,7 +128,7 @@ push:none-multi-arch:
     - docker pull ${CI_REGISTRY_IMAGE}:fpm
     - helper multitag ${CI_REGISTRY_IMAGE}:latest quay.io/jitesoft/lighttpd:latest-fpm quay.io/jitesoft/lighttpd:${VERSION}-fpm quay.io/jitesoft/lighttpd:fpm
     - helper multipush quay.io/jitesoft/lighttpd:latest-fpm quay.io/jitesoft/lighttpd:${VERSION}-fpm quay.io/jitesoft/lighttpd:fpm
-  tags: [ jitesoft, protected ]
+  tags: [ jitesoft, docker, protected, native-amd64 ]
 
 scan:
   needs:
