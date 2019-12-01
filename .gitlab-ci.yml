@@ -41,13 +41,16 @@ download:
     - export PATH="/usr/lib/ccache/bin:$PATH"
     - if [ ! -d "ccache" ]; then mkdir ccache; fi
     - apk add --no-cache build-base ccache xz flex automake autoconf libressl-dev zlib-dev bzip2-dev lua5.3-dev openldap-dev libxml2-dev sqlite-dev libev-dev gamin-dev pcre-dev
-    - tar -xJhf lighttpd-${VERSION}.tar.xz --strip-components=1
+    - mkdir src
+    - tar -xJhf lighttpd-${VERSION}.tar.xz --strip-components=1 -C src
   script:
+    - cd src
     - ./configure --prefix=/usr/local --with-lua --with-openssl --with-ldap
-    - make lighttpd
+    - make -j4
     - make install lighttpd-${VERSION}
     - ccache -s
     - $(cd /usr/local && tar -czf /tmp/lighttpd.tar.gz *)
+    - cd ..
     - mkdir out
     - mv /tmp/lighttpd.tar.gz out/lighttpd-${ARCH}.tar.gz
     - mv version.txt out/version.txt
