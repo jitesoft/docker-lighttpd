@@ -95,8 +95,8 @@ containerize:lighttpd:
     - mv lighttpd.conf out/lighttpd.conf
     - mv conf.d out/
     - VERSION=$(cat out/version.txt)
-    - TAG_LIST=$(helper taglist "${CI_REGISTRY_IMAGE},jitesoft/lighttpd" "latest,${VERSION}")
-    - docker buildx build --platform ${PLATFORMS} --progress plain --push ${TAG_LIST} --build-arg KEYS="${KEYS}" --build-arg VERSION=${VERSION} .
+    - TAGS=$(helper "${CI_REGISTRY_IMAGE},jitesoft/lighttpd" "latest,${VERSION}")
+    - docker buildx build --platform linux/amd64,linux/arm64 --progress plain --push ${TAGS} --build-arg VERSION=${VERSION} .
   tags: [ jitesoft, buildx, protected ]
   artifacts:
     paths:
@@ -109,9 +109,9 @@ containerize:lighttpd:fpm:
   image: registry.gitlab.com/jitesoft/dockerfiles/misc:latest
   script:
     - VERSION=$(cat out/version.txt)
-    - TAG_LIST=$(helper taglist "${CI_REGISTRY_IMAGE},jitesoft/lighttpd" "latest-fpm,${VERSION}-fpm,fpm")
+    - TAGS=$(helper taglist "${CI_REGISTRY_IMAGE},jitesoft/lighttpd" "latest-fpm,${VERSION}-fpm,fpm")
     - cd cgi
-    - docker buildx build --platform ${PLATFORMS} --progress plain --push ${TAG_LIST} .
+    - docker buildx build --platform linux/amd64,linux/arm64 --progress plain --push ${TAGS} .
   tags: [ jitesoft, buildx, protected ]
 
 push:none-multi-arch:
