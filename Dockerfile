@@ -15,7 +15,8 @@ ENV PORT=80 \
     SERVER_NAME="localhost" \
     SERVER_ROOT="/var/www/html/" \
     CONFIG_FILE="/etc/lighttpd/lighttpd.conf" \
-    SKIP_HEALTHCHECK="false"
+    SKIP_HEALTHCHECK="false" \
+    MAX_FDS="1024"
 
 RUN --mount=type=bind,source=./out,target=/tmp/lighty-bin \
     addgroup -g 1000 -S lighttpd \
@@ -24,9 +25,9 @@ RUN --mount=type=bind,source=./out,target=/tmp/lighty-bin \
  && chmod -R +x /usr/local/bin \
  && apk add --no-cache --virtual .req pcre-dev \
  && tar -xzhf /tmp/lighty-bin/lighttpd-${TARGETARCH}.tar.gz -C /usr/local \
- && mkdir -p /etc/lighttpd \
+ && mkdir -p /etc/lighttpd/conf.d /usr/local/lighttpd.d \
  && cp /tmp/lighty-bin/lighttpd.conf /etc/lighttpd \
- && chown -R lighttpd:lighttpd /etc/lighttpd
+ && cp /tmp/lighty-bin/conf.d/*.conf /etc/lighttpd/conf.d/
 
 HEALTHCHECK --interval=1m --timeout=5s --start-period=30s CMD healthcheck
 CMD startup
