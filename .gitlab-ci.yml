@@ -28,7 +28,7 @@ download:
     expire_in: 1 day
     paths:
       - version.txt
-      - lighttpd-*-.tar.xz
+      - lighttpd-*.tar.xz
 
 .build:
   image: registry.gitlab.com/jitesoft/dockerfiles/alpine:latest
