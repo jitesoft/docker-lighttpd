@@ -2,25 +2,95 @@ include:
   - https://gitlab.com/jitesoft/gitlab-ci-lib/raw/master/container_scan-v2.yml
 
 stages:
-    - lighttpd
-    - fpm
-    - extra
-    - scan
+  - download
+  - build
 
-variables:
-  PLATFORMS: "linux/arm64,linux/amd64,linux/386,linux/ppc64le,linux/s390x"
+download:
+  stage: download
+  before_script:
+    - apk add --no-cache grep wget gnupg curl
+    - VERSION=$(wget -qO- https://download.lighttpd.net/lighttpd/releases-1.4.x/ | grep -oP "(?<=<a href=\"lighttpd-)([0-9]{0,3}[.][0-9]{0,3}[.][0-9]{0,3})" | sort -r -u - | awk 'NR==1{print $1}')
+  image: registry.gitlab.com/jitesoft/dockerfiles/alpine:latest
+  script:
+    - echo "${VERSION}" > version.txt
+    - curl -OsS https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-${VERSION}.tar.xz
+    - curl -OsS https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-${VERSION}.tar.xz.asc
+    - curl -OsS https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-${VERSION}.sha256sum
+    - |
+      for key in $(cat keys.txt); do \
+        gpg --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-keys "$key" 2>&1 || \
+        gpg --keyserver hkp://keyserver.pgp.com:80 --recv-keys "$key" 2>&1 || \
+        gpg --keyserver hkp://pgp.mit.edu:80 --recv-keys "$key"; \
+      done
+    - gpg --verify lighttpd-${VERSION}.tar.xz.asc lighttpd-${VERSION}.tar.xz
+    - grep " lighttpd-${VERSION}.tar.xz\$" lighttpd-${VERSION}.sha256sum lighttpd-${VERSION}.tar.xz
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - version.txt
+      - lighttpd-*-.tar.xz
 
-build:lighttpd:
-  stage: lighttpd
+.build:
+  image: registry.gitlab.com/jitesoft/dockerfiles/alpine:latest
+  needs:
+    - download
+  stage: build
+  before_script:
+    - export CCACHE_DIR="${CI_PROJECT_DIR}/ccache"
+    - VERSION=$(cat version.txt)
+    - export PATH="/usr/lib/ccache/bin:$PATH"
+    - if [ ! -d "ccache" ]; then mkdir ccache; fi
+    - apk add --no-cache build-base ccache xz flex automake autoconf libressl-dev zlib-dev bzip2-dev lua5.3-dev openldap-dev libxml2-dev sqlite-dev libev-dev gamin-dev pcre-dev
+    - tar -xJhf lighttpd-${VERSION}.tar.xz --strip-components=1
+  script:
+    - ./configure --prefix=/usr/local --with-lua --with-openssl --with-ldap
+    - make lighttpd
+    - make install lighttpd-${VERSION}
+    - ccache -s
+    - $(cd /usr/local && tar -czf /tmp/lighttpd.tar.gz *)
+    - mkdir out
+    - mv /tmp/lighttpd.tar.gz out/lighttpd-${ARCH}.tar.gz
+    - mv version.txt out/version.txt
+  artifacts:
+    paths:
+      - out
+    expire_in: 1 day
+  cache:
+    paths:
+      - ccache
+    key: lighttpd.build.ccache-${ARCH}
+
+build:arm:
+  extends: .build
+  tags:
+    - native-aarch64
+  variables:
+    GIT_STRATEGY: none
+    ARCH: arm64
+
+build:amd:
+  extends: .build
+  tags:
+    - native-amd64
+  variables:
+    GIT_STRATEGY: none
+    ARCH: amd64
+
+.containerize:lighttpd:
+  stage: containerize
+  needs:
+    - build:amd
+    - build:arm
   image: registry.gitlab.com/jitesoft/dockerfiles/misc:latest
   script:
+    - mv startup out/bin/startup
+    - mv healthcheck out/bin/healthcheck
     - VERSION=$(wget -qO- https://download.lighttpd.net/lighttpd/releases-1.4.x/ | grep -oP "(?<=<a href=\"lighttpd-)([0-9]{0,3}[.][0-9]{0,3}[.][0-9]{0,3})" | sort -r -u - | awk 'NR==1{print $1}')
-    - KEYS=$(cat keys.txt)
     - TAG_LIST=$(helper taglist "${CI_REGISTRY_IMAGE},jitesoft/lighttpd" "latest,${VERSION}")
     - docker buildx build --platform ${PLATFORMS} --progress plain --push ${TAG_LIST} --build-arg KEYS="${KEYS}" --build-arg VERSION=${VERSION} .
-  tags: [ jitesoft, buildx, amd64, arm64, x86, ppc64le, s390x ]
+  tags: [ buildx, protected ]
 
-build:lighttpd:fpm:
+.build:lighttpd:fpm:
   needs:
     - build:lighttpd
   stage: fpm
@@ -32,7 +102,7 @@ build:lighttpd:fpm:
     - docker buildx build --platform ${PLATFORMS} --progress plain --push ${TAG_LIST} .
   tags: [ jitesoft, buildx, protected ]
 
-push:none-multi-arch:
+.push:none-multi-arch:
   stage: extra
   image: registry.gitlab.com/jitesoft/dockerfiles/misc:latest
   script:
@@ -45,7 +115,7 @@ push:none-multi-arch:
     - helper multipush quay.io/jitesoft/lighttpd:latest-fpm quay.io/jitesoft/lighttpd:${VERSION}-fpm quay.io/jitesoft/lighttpd:fpm
   tags: [ jitesoft, protected ]
 
-scan:
+.scan:
   needs:
     - build:lighttpd
   extends: .container_scanning
