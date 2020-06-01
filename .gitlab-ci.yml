@@ -35,7 +35,7 @@ download:
       - lighttpd-*.tar.xz
 
 .build:
-  image: registry.gitlab.com/jitesoft/dockerfiles/alpine:latest
+  image: registry.gitlab.com/jitesoft/dockerfiles/misc/buildbase
   needs:
     - download
   stage: build
@@ -44,7 +44,7 @@ download:
     - VERSION=$(cat version.txt)
     - export PATH="/usr/lib/ccache/bin:$PATH"
     - if [ ! -d "ccache" ]; then mkdir ccache; fi
-    - apk add --no-cache build-base ccache xz flex automake autoconf libressl-dev zlib-dev bzip2-dev lua5.3-dev openldap-dev libxml2-dev sqlite-dev libev-dev gamin-dev pcre-dev
+    - apk add --no-cache build-base flex libressl-dev bzip2-dev lua5.3-dev openldap-dev libxml2-dev sqlite-dev libev-dev pcre-dev
     - mkdir src
     - tar -xJhf lighttpd-${VERSION}.tar.xz --strip-components=1 -C src
   script:
