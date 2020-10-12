@@ -1,5 +1,6 @@
 include:
-  - https://gitlab.com/jitesoft/gitlab-ci-lib/raw/master/container_scan-v2.yml
+  - file: /Scan/trivy.yml
+    project: jitesoft/gitlab-ci-lib
 
 stages:
   - download
@@ -95,7 +96,7 @@ containerize:lighttpd:
     - mv lighttpd.conf out/lighttpd.conf
     - mv conf.d out/
     - VERSION=$(cat out/version.txt)
-    - TAGS=$(helper "${CI_REGISTRY_IMAGE},jitesoft/lighttpd" "latest,${VERSION}")
+    - TAGS=$(helper "${CI_REGISTRY_IMAGE},jitesoft/lighttpd,ghcr.io/jitesoft/lighttpd" "latest,${VERSION}")
     - docker buildx build --platform linux/amd64,linux/arm64 --progress plain --push ${TAGS} --build-arg VERSION=${VERSION} .
   tags: [ jitesoft, buildx, protected ]
   artifacts:
@@ -109,7 +110,7 @@ containerize:lighttpd:fpm:
   image: registry.gitlab.com/jitesoft/dockerfiles/misc:latest
   script:
     - VERSION=$(cat out/version.txt)
-    - TAGS=$(helper taglist "${CI_REGISTRY_IMAGE},jitesoft/lighttpd" "latest-fpm,${VERSION}-fpm,fpm")
+    - TAGS=$(helper taglist "${CI_REGISTRY_IMAGE},jitesoft/lighttpd,ghcr.io/jitesoft/lighttpd" "latest-fpm,${VERSION}-fpm,fpm")
     - cd cgi
     - docker buildx build --platform linux/amd64,linux/arm64 --progress plain --push ${TAGS} .
   tags: [ jitesoft, buildx, protected ]

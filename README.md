@@ -3,9 +3,11 @@
 
 [![Docker Pulls](https://img.shields.io/docker/pulls/jitesoft/lighttpd.svg)](https://hub.docker.com/r/jitesoft/lighttpd)
 [![Back project](https://img.shields.io/badge/Open%20Collective-Tip%20the%20devs!-blue.svg)](https://opencollective.com/jitesoft-open-source)
-[![pipeline status](https://gitlab.com/jitesoft/dockerfiles/lighttpd/badges/master/pipeline.svg)](https://gitlab.com/jitesoft/dockerfiles/lighttpd/commits/master)
 
 Alpine linux with Lighttpd built from source.
+
+[Lighttpd](https://lighttpd.net) (lighty) is a lightweight web-server which is designed and optimized for high performance environments.
+Lighttpd is open source under the revised BSD license.
 
 To add a new configurations (more than the default configuration), add a new `*.conf` file to the `/usr/local/lighttpd.d` directory.
 Each file in that directory will be included into the configuration.  
@@ -18,48 +20,16 @@ and change the `CONFIG_FILE` env variable to your preferred path.
 Tags are based on lighttpd version where latest is the latest version at build time.  
 Older versions are not re-built, only latest version.  
 
-Some features are missing in versions prior to 1.4.54, those include:
+Images can be found at:
 
- * Loading of custom config files from `/usr/local/lighttpd.d` directory.
- * Max_fdi's env variable.
+* [Docker hub](https://hub.docker.com/r/jitesoft/lighttpd): `jitesoft/lighttpd`  
+* [GitLab](https://gitlab.com/jitesoft/dockerfiles/lighttpd): `registry.gitlab.com/jitesoft/dockerfiles/lighttpd`
+* [Quay.io](https://quay.io/jitesoft/lighttpd): `quay.io/jitesoft/lighttpd`
+* [GitHub](https://github.com/orgs/jitesoft/packages/container/package/lighttpd): `ghcr.io/jitesoft/lighttpd`
 
-### Docker Hub
-
-* `jitesoft/lighttpd`
-    * `latest`, `1.4.54`
-    * `1.4.53`
-    * `1.4.49`
-    * `fpm`, `latest-fpm`, `1.4.54`
-    * `1.4.53-fpm`
-    * `1.4.49-fpm`
-
-### GitLab
-
-* `registry.gitlab.com/jitesoft/dockerfiles/lighttpd`
-    * `latest`, `1.4.54`
-    * `1.4.53`
-    * `1.4.49`
-    * `fpm`, `latest-fpm`, `1.4.54`
-    * `1.4.53-fpm`
-    * `1.4.49-fpm`
-
-### Quay.io
-
-* `quay.io/jitesoft/lighttpd`
-    * `latest`, `1.4.54`
-    * `1.4.53`
-    * `1.4.49`
-    * `fpm`, `latest-fpm`, `1.4.54`
-    * `1.4.53-fpm`
-    * `1.4.49-fpm`
 
 Dockerfiles can be found at [GitLab](https://gitlab.com/jitesoft/dockerfiles/lighttpd/blob/master/cgi/Dockerfile) and
 [GitHub](https://github.com/jitesoft/docker-lighttpd).
-
-## What is Lighttpd?
-
-[Lighttpd](https://lighttpd.net) (lighty) is a lightweight web-server which is designed and optimized for high performance environments.
-Lighttpd is open source under the revised BSD license.
 
 ## The image
 
