@@ -35,6 +35,15 @@ Dockerfiles can be found at [GitLab](https://gitlab.com/jitesoft/dockerfiles/lig
 
 This image contains lighttpd built from source, it runs on the alpine linux distro, making it a small image keeping the disk, cpu and ram at a minimum!
 
+### www-data user
+
+Prior to 2021 07 23, the image used the user lighttpd (1000/1000) to run the image.  
+This have been changed to use the default www-data group and a www-data user with id 82
+to comply with standard www-data user in alpine images.
+
+Containers created runs as root (easily changed in production with the appropriate flags),
+while the lighttpd process runs as the www-data user (82) by default.
+
 ## Environment variables
 
 The following environment variables are used and exposed in the dockerfile:
