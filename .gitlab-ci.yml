@@ -36,7 +36,7 @@ download:
       - lighttpd-*.tar.xz
 
 .build:
-  image: registry.gitlab.com/jitesoft/dockerfiles/misc/buildbase
+  image: registry.gitlab.com/jitesoft/dockerfiles/misc/buildbase:latest
   needs:
     - download
   stage: build

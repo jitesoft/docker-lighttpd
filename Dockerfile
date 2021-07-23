@@ -19,8 +19,7 @@ ENV PORT=80 \
     MAX_FDS="1024"
 
 RUN --mount=type=bind,source=./out,target=/tmp/lighty-bin \
-    addgroup -g 1000 -S lighttpd \
- && adduser -u 1000 -S lighttpd -G lighttpd \
+    adduser -u 1000 -S lighttpd -G lighttpd \
  && cp /tmp/lighty-bin/startup /tmp/lighty-bin/healthcheck /usr/local/bin \
  && chmod -R +x /usr/local/bin \
  && apk add --no-cache --virtual .req pcre-dev \
