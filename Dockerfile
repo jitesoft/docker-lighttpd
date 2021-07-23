@@ -10,16 +10,18 @@ LABEL maintainer="Johannes Tegnér <johannes@jitesoft.com>" \
       com.jitesoft.project.registry.uri="registry.gitlab.com/jitesoft/dockerfiles/lighttpd" \
       com.jitesoft.app.lighttpd.version="${VERSION}"
 
+ARG WWWDATA_GUID="82"
 ARG TARGETARCH
 ENV PORT=80 \
     SERVER_NAME="localhost" \
     SERVER_ROOT="/var/www/html/" \
     CONFIG_FILE="/etc/lighttpd/lighttpd.conf" \
     SKIP_HEALTHCHECK="false" \
-    MAX_FDS="1024"
+    MAX_FDS="1024" \
+    WWWDATA_GUID="${WWWDATA_GUID}"
 
 RUN --mount=type=bind,source=./out,target=/tmp/lighty-bin \
-    adduser -u 1000 -S lighttpd -G lighttpd \
+    adduser -u ${WWWDATA_GUID} -S www-data -G www-data \
  && cp /tmp/lighty-bin/startup /tmp/lighty-bin/healthcheck /usr/local/bin \
  && chmod -R +x /usr/local/bin \
  && apk add --no-cache --virtual .req pcre-dev \
