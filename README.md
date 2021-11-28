@@ -14,6 +14,10 @@ Each file in that directory will be included into the configuration.
 If you wish to replace the base configuration fully, replace the `/etc/lighttpd/conf.d/lighttpd.conf` file or add a new file
 and change the `CONFIG_FILE` env variable to your preferred path.
 
+### Deprecation  of FPM / introduction of CGI
+
+The -fpm tagged images are deprecated as of 2021-11-28 and will stop receiving updates.  
+For a replacement, see the -cgi tagged images, which will be similar but with some differences.
 
 ## Tags
 
@@ -24,9 +28,7 @@ Images can be found at:
 
 * [Docker hub](https://hub.docker.com/r/jitesoft/lighttpd): `jitesoft/lighttpd`  
 * [GitLab](https://gitlab.com/jitesoft/dockerfiles/lighttpd): `registry.gitlab.com/jitesoft/dockerfiles/lighttpd`
-* [Quay.io](https://quay.io/jitesoft/lighttpd): `quay.io/jitesoft/lighttpd`
 * [GitHub](https://github.com/orgs/jitesoft/packages/container/package/lighttpd): `ghcr.io/jitesoft/lighttpd`
-
 
 Dockerfiles can be found at [GitLab](https://gitlab.com/jitesoft/dockerfiles/lighttpd/blob/master/cgi/Dockerfile) and
 [GitHub](https://github.com/jitesoft/docker-lighttpd).
@@ -68,28 +70,39 @@ It's exposed as an environment variable due to the fact that a 404 will be repor
 
 The `MAX_FDS` variable sets the maximum file descriptors used by lighttpd and could be tweaked if needed.
 
-## FPM tag
+## CGI tag
 
-The `fpm` tagged image have `mod_fcgi_fpm` enabled with env variables set to enable connection to a php-fpm container. 
-The lighttpd container will await the fpm container before starting. This image still requires the same volumes as the php fpm container (the files to serve).
+The `cgi` tagged image have `mod_fastcgi` enabled with env variables set to enable connection to a separate cgi host. 
+The lighttpd container will await the cgi host before starting by checking the host with nc (netcat, busybox version).  
 
 ```txt
-FPM_CONTAINER="fpm"
-FPM_PORT=9000
+CGI_HOST="fpm"
+CGI_PORT="9000"
+CHECK_LOCAL="enable"
+CGI_FILE_EXT=".php"
 ```
+
+If you do not want to share data between your containers, set the `CHECK_LOCAL` to "disable" to ignore 
+local files in the lighttpd container.
 
 The default configuration (which resides in `/etc/lighttpd/conf.d`) contains the following configuration:
 
 ```txt
 server.modules += ("mod_fastcgi")
-fastcgi.server += ( ".php" =>
+fastcgi.server += ( env.CGI_FILE_EXT =>
         ((
-                "host" => env.FPM_CONTAINER,
-                "port" => env.FPM_PORT,
-                "broken-scriptfilename" => "enable"
+                "host" => env.CGI_HOST,
+                "port" => env.CGI_PORT,
+                "broken-scriptfilename" => "enable",
+                "docroot" => env.SERVER_ROOT,
+                "check-local" => env.CHECK_LOCAL
+
         ))
 )
 ```
+
+Once the cgi container have connected, it will create an empty file in `/tmp/ready` which can be used
+as a startup indicator if needed.
 
 ### Image labels
 
@@ -97,23 +110,28 @@ This image follows the [Jitesoft image label specification 1.0.0](https://gitlab
 
 ## Licenses
 
-This repository is realeased under the [MIT license](https://gitlab.com/jitesoft/dockerfiles/lighttpd/blob/master/LICENSE).  
+This repository is released under the [MIT license](https://gitlab.com/jitesoft/dockerfiles/lighttpd/blob/master/LICENSE).  
 You can find the Lighttpd license [here](https://git.lighttpd.net/lighttpd/lighttpd1.4.git/tree/COPYING).
 
-## Sponsors
+### Sponsors
 
-Sponsoring is vital for the further development and maintaining of open source projects.  
-Questions and sponsoring queries can be made via <a href="mailto:sponsor@jitesoft.com">email</a>.  
+Jitesoft images are built via GitLab CI on runners hosted by the following wonderful organisations:
+
+<a href="https://fosshost.org/">
+  <img src="https://raw.githubusercontent.com/jitesoft/misc/master/sponsors/fosshost.png" height="128" alt="Fosshost logo" />
+</a>
+<a href="https://www.aarch64.com/">
+  <img src="https://raw.githubusercontent.com/jitesoft/misc/master/sponsors/aarch64.png" height="128" alt="Aarch64 logo" />
+</a>
+
+_The companies above are not affiliated with Jitesoft or any Jitesoft Projects directly._
+
+---
+
+Sponsoring is vital for the further development and maintaining of open source.  
+Questions and sponsoring queries can be made by <a href="mailto:sponsor@jitesoft.com">email</a>.  
 If you wish to sponsor our projects, reach out to the email above or visit any of the following sites:
 
 [Open Collective](https://opencollective.com/jitesoft-open-source)  
 [GitHub Sponsors](https://github.com/sponsors/jitesoft)  
 [Patreon](https://www.patreon.com/jitesoft)
-
-Jitesoft images are built via GitLab CI on runners hosted by the following wonderful organisations:
-
-<a href="https://fosshost.org/">
-  <img src="https://raw.githubusercontent.com/jitesoft/misc/master/sponsors/fosshost.png" width="256" alt="Fosshost logo" />
-</a>
-
-_The companies above are not affiliated with Jitesoft or any Jitesoft Projects directly._
