@@ -1,5 +1,6 @@
 # syntax=docker/dockerfile:experimental
-FROM registry.gitlab.com/jitesoft/dockerfiles/lighttpd:latest
+ARG VERSION
+FROM registry.gitlab.com/jitesoft/dockerfiles/lighttpd:${VERSION}
 ARG VERSION
 LABEL maintainer="Johannes Tegnér <johannes@jitesoft.com>" \
       maintainer.org="Jitesoft" \
@@ -9,7 +10,6 @@ LABEL maintainer="Johannes Tegnér <johannes@jitesoft.com>" \
       com.jitesoft.project.repo.issues="https://gitlab.com/jitesoft/dockerfiles/lighttpd/issues" \
       com.jitesoft.project.registry.uri="registry.gitlab.com/jitesoft/dockerfiles/lighttpd" \
       com.jitesoft.app.lighttpd.version="${VERSION}"
-
 
 ENV PORT=80 \
     SERVER_NAME="localhost" \
