@@ -1,22 +1,50 @@
 include:
-  - file: /Scan/trivy.yml
-    project: jitesoft/gitlab-ci-lib
+  - project: jitesoft/gitlab-ci-lib
+    file: Scan/trivy.yml
+  - project: jitesoft/gitlab-ci-lib
+    file: OCI/sign.yml
 
 stages:
   - download
   - build
   - containerize
-  - fpm
-  - extra
+  - cgi
+  - sign
   - scan
+  - cache
+
+check:
+  stage: download
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: always
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
+    - when: never
+  script:
+    - touch version.txt
+    - VERSION=$(wget -qO- https://download.lighttpd.net/lighttpd/releases-1.4.x/ | grep -oP "(?<=<a href=\"lighttpd-)([0-9]{0,3}[.][0-9]{0,3}[.][0-9]{0,3})" | sort -r -u - | awk 'NR==1{print $1}')
+    - |
+      if [ ! -z "${FORCE_BUILD+x}" ] || [ "${VERSION}" != "$(cat version.txt)" ]; then
+        echo "${VERSION} and $(cat version.txt) differ. Running build."
+        curl -F token=${CI_JOB_TOKEN} -F ref=master -F "variables[VERSION]=${VERSION}" -F "variables[BUILD]=true" https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/trigger/pipeline
+      else
+        echo "${REMOTE_VERSION} and ${LOCAL_VERSION} where equal. Running scan."
+        curl -F token=${CI_JOB_TOKEN} -F ref=master -F "variables[VERSION]=${VERSION}" -F "variables[SCAN]=true" https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/trigger/pipeline
+      fi
+  cache:
+    paths:
+      - version.txt
+    policy: pull
 
 download:
+  rules:
+    - if: "$BUILD"
+      when: always
+    - when: never
   stage: download
-  before_script:
-    - VERSION=$(wget -qO- https://download.lighttpd.net/lighttpd/releases-1.4.x/ | grep -oP "(?<=<a href=\"lighttpd-)([0-9]{0,3}[.][0-9]{0,3}[.][0-9]{0,3})" | sort -r -u - | awk 'NR==1{print $1}')
   image: registry.gitlab.com/jitesoft/dockerfiles/misc:latest
   script:
-    - echo "${VERSION}" > version.txt
     - curl -OsS https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-${VERSION}.tar.xz
     - curl -OsS https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-${VERSION}.tar.xz.asc
     - curl -OsS https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-${VERSION}.sha256sum
@@ -31,17 +59,19 @@ download:
   artifacts:
     expire_in: 1 day
     paths:
-      - version.txt
       - lighttpd-*.tar.xz
 
 .build:
+  rules:
+    - if: "$BUILD"
+      when: on_success
+    - when: never
   image: registry.gitlab.com/jitesoft/dockerfiles/misc/buildbase:latest
   needs:
     - download
   stage: build
   before_script:
     - export CCACHE_DIR="${CI_PROJECT_DIR}/ccache"
-    - VERSION=$(cat version.txt)
     - export PATH="/usr/lib/ccache/bin:$PATH"
     - if [ ! -d "ccache" ]; then mkdir ccache; fi
     - apk add --force-overwrite --no-cache build-base bsd-compat-headers flex libressl-dev bzip2-dev lua5.3-dev openldap-dev libxml2-dev sqlite-dev libev-dev pcre-dev
@@ -57,7 +87,6 @@ download:
     - cd ..
     - mkdir out
     - mv /tmp/lighttpd.tar.gz out/lighttpd-${ARCH}.tar.gz
-    - mv version.txt out/version.txt
   artifacts:
     paths:
       - out
@@ -84,6 +113,10 @@ build:amd:
     ARCH: amd64
 
 containerize:lighttpd:
+  rules:
+    - if: "$BUILD"
+      when: on_success
+    - when: never
   stage: containerize
   needs:
     - build:amd
@@ -94,7 +127,6 @@ containerize:lighttpd:
     - mv healthcheck out/healthcheck
     - mv lighttpd.conf out/lighttpd.conf
     - mv conf.d out/
-    - VERSION=$(cat out/version.txt)
     - TAGS=$(helper "${CI_REGISTRY_IMAGE},jitesoft/lighttpd,ghcr.io/jitesoft/lighttpd" "latest,${VERSION}")
     - docker buildx build --platform linux/amd64,linux/arm64 --progress plain --push ${TAGS} --build-arg VERSION=${VERSION} .
   tags: [ jitesoft, buildx, protected ]
@@ -102,35 +134,84 @@ containerize:lighttpd:
     paths:
       - out/version.txt
 
-containerize:lighttpd:fpm:
-  needs:
-    - containerize:lighttpd
-  stage: fpm
-  image: registry.gitlab.com/jitesoft/dockerfiles/misc:latest
-  script:
-    - VERSION=$(cat out/version.txt)
-    - TAGS=$(helper taglist "${CI_REGISTRY_IMAGE},jitesoft/lighttpd,ghcr.io/jitesoft/lighttpd" "latest-fpm,${VERSION}-fpm,fpm")
-    - cd fpm
-    - docker buildx build --platform linux/amd64,linux/arm64 --progress plain --push ${TAGS} .
-  tags: [ jitesoft, buildx, protected ]
-
 containerize:lighttpd:cgi:
+  rules:
+    - if: "$BUILD"
+      when: on_success
+    - when: never
   needs:
-    - containerize:lighttpd
-  stage: fpm
+    - job: containerize:lighttpd
+      artifacts: false
+  stage: cgi
   image: registry.gitlab.com/jitesoft/dockerfiles/misc:latest
   script:
-    - VERSION=$(cat out/version.txt)
-    - TAGS=$(helper taglist "${CI_REGISTRY_IMAGE}/cgi", "latest,${VERSION})
+    - TAGS=$(helper taglist "${CI_REGISTRY_IMAGE}/cgi", "latest,${VERSION}")
     - OTAGS=$(helper taglist "jitesoft/lighttpd,ghcr.io/jitesoft/lighttpd" "latest-cgi,${VERSION}-cgi,cgi")
     - TAGS="$TAGS $OTAGS"
     - docker buildx build --platform linux/amd64,linux/arm64 --progress plain --push ${TAGS} -f cgi/Dockerfile .
   tags: [ jitesoft, buildx, protected ]
 
+sign:
+  extends: .sign
+  tags: [ jitesoft, protected, buildx ]
+  stage: sign
+  variables:
+    COSIGN_ANNOTATIONS: "-a sig=jitesoft-bot"
+    SIGN_TAGS: "${VERSION},latest"
+    SIGN_IMAGES: "jitesoft/lighttpd,${CI_REGISTRY_IMAGE},ghcr.io/jitesoft/lighttpd,${CI_REGISTRY_IMAGE}/cgi"
+  rules:
+    - if: "$BUILD"
+      when: on_success
+    - when: never
+
+sign:cgi:
+  extends: .sign
+  tags: [ jitesoft, protected, buildx ]
+  stage: sign
+  variables:
+    COSIGN_ANNOTATIONS: "-a sig=jitesoft-bot"
+    SIGN_TAGS: "${VERSION}-cgi,latest-cgi"
+    SIGN_IMAGES: "jitesoft/lighttpd,ghcr.io/jitesoft/lighttpd"
+  rules:
+    - if: "$BUILD"
+      when: on_success
+    - when: never
+
 scan:
-  needs:
-    - containerize:lighttpd
+  stage: scan
+  rules:
+    - if: "$SCAN"
+      when: always
+    - if: "$BUILD"
+      when: on_success
+    - when: never
   extends: .container_scanning
   variables:
-    SCANNING_IMAGE_NAME: "${CI_REGISTRY_IMAGE}:latest"
+    SCANNING_IMAGE_NAME: "${CI_REGISTRY_IMAGE}:${VERSION}"
     GIT_STRATEGY: none
+
+scan:cgi:
+  stage: scan
+  rules:
+    - if: "$SCAN"
+      when: always
+    - if: "$BUILD"
+      when: on_success
+    - when: never
+  extends: .container_scanning
+  variables:
+    SCANNING_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/cgi:${VERSION}"
+    GIT_STRATEGY: none
+
+create-cache:
+  stage: cache
+  script:
+    - echo "${VERSION}" > version.txt
+  cache:
+    paths:
+      - version.txt
+    policy: push
+  rules:
+    - if: "$BUILD"
+      when: on_success
+    - when: never
