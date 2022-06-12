@@ -22,6 +22,7 @@ check:
       when: always
     - when: never
   script:
+    # http://download.lighttpd.net/lighttpd/releases-1.4.x/latest.txt
     - touch version.txt
     - VERSION=$(wget -qO- https://download.lighttpd.net/lighttpd/releases-1.4.x/ | grep -oP "(?<=<a href=\"lighttpd-)([0-9]{0,3}[.][0-9]{0,3}[.][0-9]{0,3})" | sort -r -u - | awk 'NR==1{print $1}')
     - |
@@ -50,6 +51,8 @@ download:
     - curl -OsS https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-${VERSION}.sha256sum
     - |
       for key in $(cat keys.txt); do \
+        gpg --keyserver hkps://keys.openpgp.org --recv-keys "$key" 2>&1 || \
+        gpg --keyserver keyserver.ubuntu.com --recv-keys "$key" 2>&1 || \
         gpg --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-keys "$key" 2>&1 || \
         gpg --keyserver hkp://keyserver.pgp.com:80 --recv-keys "$key" 2>&1 || \
         gpg --keyserver hkp://pgp.mit.edu:80 --recv-keys "$key"; \
