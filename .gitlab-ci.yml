@@ -77,12 +77,12 @@ download:
     - export CCACHE_DIR="${CI_PROJECT_DIR}/ccache"
     - export PATH="/usr/lib/ccache/bin:$PATH"
     - if [ ! -d "ccache" ]; then mkdir ccache; fi
-    - apk add --force-overwrite --no-cache build-base pcre2-dev bsd-compat-headers flex libressl-dev bzip2-dev lua5.3-dev openldap-dev libxml2-dev sqlite-dev libev-dev pcre-dev
+    - apk add --force-overwrite --no-cache build-base pcre2-dev bsd-compat-headers brotli-dev flex libressl-dev bzip2-dev lua5.3-dev openldap-dev libxml2-dev sqlite-dev libev-dev
     - mkdir src
     - tar -xJhf lighttpd-${VERSION}.tar.xz --strip-components=1 -C src
   script:
     - cd src
-    - ./configure --prefix=/usr/local --with-lua --with-openssl --with-ldap
+    - ./configure --prefix=/usr/local --with-lua --with-openssl --with-ldap --with-brotli
     - make -j4
     - make install
     - ccache -s

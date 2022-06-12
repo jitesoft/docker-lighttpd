@@ -25,7 +25,8 @@ ENV PORT=80 \
 RUN --mount=type=bind,source=./cgi,target=/tmp/cgi \
     cp /tmp/cgi/000-fastcgi.conf /etc/lighttpd/conf.d/ \
  && cp /tmp/cgi/entrypoint /usr/local/bin/entrypoint \
- && chmod +x /usr/local/bin/entrypoint
+ && chmod +x /usr/local/bin/entrypoint \
+ && lighttpd -V
 
 HEALTHCHECK --interval=1m --timeout=5s --start-period=30s CMD healthcheck
 ENTRYPOINT [ "entrypoint" ]
