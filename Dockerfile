@@ -28,7 +28,9 @@ RUN --mount=type=bind,source=./out,target=/tmp/lighty-bin \
  && tar -xzhf /tmp/lighty-bin/lighttpd-${TARGETARCH}.tar.gz -C /usr/local \
  && mkdir -p /etc/lighttpd/conf.d /usr/local/lighttpd.d \
  && cp /tmp/lighty-bin/lighttpd.conf /etc/lighttpd \
- && cp /tmp/lighty-bin/conf.d/*.conf /etc/lighttpd/conf.d/
+ && cp /tmp/lighty-bin/conf.d/*.conf /etc/lighttpd/conf.d/ \
+ # Sanity check \
+ && lighttpd -V
 
 HEALTHCHECK --interval=1m --timeout=5s --start-period=30s CMD healthcheck
 CMD startup
