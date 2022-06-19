@@ -33,4 +33,5 @@ RUN --mount=type=bind,source=./out,target=/tmp/lighty-bin \
  && lighttpd -V
 
 HEALTHCHECK --interval=1m --timeout=5s --start-period=30s CMD healthcheck
-CMD startup
+ENTRYPOINT ["lighttpd"]
+CMD ["-D","-f","${CONFIG_FILE}"]
