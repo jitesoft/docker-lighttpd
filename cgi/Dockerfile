@@ -30,4 +30,4 @@ RUN --mount=type=bind,source=./cgi,target=/tmp/cgi \
 
 HEALTHCHECK --interval=1m --timeout=5s --start-period=30s CMD healthcheck
 ENTRYPOINT [ "entrypoint" ]
-CMD [ "startup" ]
+CMD [ "-D" ]

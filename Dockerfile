@@ -22,7 +22,7 @@ ENV PORT=80 \
 
 RUN --mount=type=bind,source=./out,target=/tmp/lighty-bin \
     adduser -u ${WWWDATA_GUID} -S www-data -G www-data \
- && cp /tmp/lighty-bin/startup /tmp/lighty-bin/healthcheck /usr/local/bin \
+ && cp /tmp/lighty-bin/entrypoint /tmp/lighty-bin/healthcheck /usr/local/bin \
  && chmod -R +x /usr/local/bin \
  && apk add --no-cache --virtual .req pcre2 brotli \
  && tar -xzhf /tmp/lighty-bin/lighttpd-${TARGETARCH}.tar.gz -C /usr/local \
@@ -33,4 +33,5 @@ RUN --mount=type=bind,source=./out,target=/tmp/lighty-bin \
  && lighttpd -V
 
 HEALTHCHECK --interval=1m --timeout=5s --start-period=30s CMD healthcheck
-CMD startup
+ENTRYPOINT ["entrypoint"]
+CMD ["-D"]

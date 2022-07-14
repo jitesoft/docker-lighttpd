@@ -22,7 +22,6 @@ check:
       when: always
     - when: never
   script:
-    # http://download.lighttpd.net/lighttpd/releases-1.4.x/latest.txt
     - touch version.txt
     - VERSION=$(wget -qO- https://download.lighttpd.net/lighttpd/releases-1.4.x/ | grep -oP "(?<=<a href=\"lighttpd-)([0-9]{0,3}[.][0-9]{0,3}[.][0-9]{0,3})" | sort -r -u - | awk 'NR==1{print $1}')
     - |
@@ -126,16 +125,13 @@ containerize:lighttpd:
     - build:arm
   image: registry.gitlab.com/jitesoft/dockerfiles/misc:latest
   script:
-    - mv startup out/startup
-    - mv healthcheck out/healthcheck
-    - mv lighttpd.conf out/lighttpd.conf
+    - mv entrypoint out/
+    - mv healthcheck out/
+    - mv lighttpd.conf out/
     - mv conf.d out/
     - TAGS=$(helper "${CI_REGISTRY_IMAGE},jitesoft/lighttpd,ghcr.io/jitesoft/lighttpd" "latest,${VERSION}")
     - docker buildx build --platform linux/amd64,linux/arm64 --progress plain --push ${TAGS} --build-arg VERSION=${VERSION} .
   tags: [ jitesoft, buildx, protected ]
-  artifacts:
-    paths:
-      - out/version.txt
 
 containerize:lighttpd:cgi:
   rules:

@@ -1,17 +1,23 @@
 #!/usr/bin/env ash
+set -e
 
-if [ -z "${CGI_HOST+x}" ]; then
-  echo "No CGI_HOST env variable found, exiting"
-  exit 1
-elif [ -z "${CGI_PORT}" ]; then
-  echo "No CGI_PORT env variable found, exiting"
-  exit 1
+if [ "${1#-}" != "$1" ]; then
+
+  if [ -z "${CGI_HOST+x}" ]; then
+    echo "No CGI_HOST env variable found, exiting"
+    exit 1
+  elif [ -z "${CGI_PORT}" ]; then
+    echo "No CGI_PORT env variable found, exiting"
+    exit 1
+  fi
+
+  echo "Awaiting connection to CGI host"
+  while ! nc -z "${CGI_HOST}" "${CGI_PORT}" -w 5 2>/dev/null; do echo -e "No connection, retrying"; done
+  echo "CGI host found, starting lighttpd!"
+
+  touch /tmp/ready
+
+  set -- lighttpd "$@" -f "${CONFIG_FILE}"
 fi
-
-echo "Awaiting connection to CGI host"
-while ! nc -z "${CGI_HOST}" "${CGI_PORT}" -w 5 2>/dev/null; do echo -e "No connection, retrying"; done
-echo "CGI host found, starting lighttpd!"
-
-touch /tmp/ready
 
 exec "$@"
