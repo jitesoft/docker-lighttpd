@@ -8,7 +8,17 @@ LABEL maintainer="Johannes Tegnér <johannes@jitesoft.com>" \
       com.jitesoft.project.repo.uri="https://gitlab.com/jitesoft/dockerfiles/lighttpd" \
       com.jitesoft.project.repo.issues="https://gitlab.com/jitesoft/dockerfiles/lighttpd/issues" \
       com.jitesoft.project.registry.uri="registry.gitlab.com/jitesoft/dockerfiles/lighttpd" \
-      com.jitesoft.app.lighttpd.version="${VERSION}"
+      com.jitesoft.app.lighttpd.version="${VERSION}" \
+      # Open container labels
+      org.opencontainers.image.version="${VERSION}" \
+      org.opencontainers.image.created="${BUILD_TIME}" \
+      org.opencontainers.image.description="Lighttpd on Alpine linux" \
+      org.opencontainers.image.vendor="Jitesoft" \
+      org.opencontainers.image.source="https://gitlab.com/jitesoft/dockerfiles/lighttpd" \
+      # Artifact hub annotations
+      io.artifacthub.package.alternative-locations="oci://index.docker.io/jitesoft/lighttpd,oci://ghcr.io/jitesoft/lighttpd,oci://registry.gitlab.com/jitesoft/dockerfiles/lighttpd" \
+      io.artifacthub.package.readme-url="https://gitlab.com/jitesoft/dockerfiles/lighttpd/-/raw/master/README.md" \
+      io.artifacthub.package.logo-url="https://jitesoft.com/favicon-96x96.png"
 
 ARG WWWDATA_GUID="82"
 ARG TARGETARCH
