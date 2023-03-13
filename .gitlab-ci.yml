@@ -129,7 +129,7 @@ containerize:lighttpd:
     - mv healthcheck out/
     - mv lighttpd.conf out/
     - mv conf.d out/
-    - TAGS=$(helper "${CI_REGISTRY_IMAGE},jitesoft/lighttpd,ghcr.io/jitesoft/lighttpd" "latest,${VERSION}")
+    - TAGS=$(helper "${CI_REGISTRY_IMAGE},jitesoft/lighttpd,ghcr.io/jitesoft/lighttpd,quay.io/jitesoft/lighttpd" "latest,${VERSION}")
     - docker buildx build --platform linux/amd64,linux/arm64 --progress plain --push ${TAGS} --build-arg VERSION=${VERSION} .
   tags: [ jitesoft, buildx, protected ]
 
@@ -145,7 +145,7 @@ containerize:lighttpd:cgi:
   image: registry.gitlab.com/jitesoft/dockerfiles/misc:latest
   script:
     - TAGS=$(helper taglist "${CI_REGISTRY_IMAGE}/cgi", "latest,${VERSION}")
-    - OTAGS=$(helper taglist "jitesoft/lighttpd,ghcr.io/jitesoft/lighttpd" "latest-cgi,${VERSION}-cgi,cgi")
+    - OTAGS=$(helper taglist "jitesoft/lighttpd,ghcr.io/jitesoft/lighttpd,quay.io/jitesoft/lighttpd" "latest-cgi,${VERSION}-cgi,cgi")
     - TAGS="$TAGS $OTAGS"
     - docker buildx build --platform linux/amd64,linux/arm64 --build-arg BUILD_TIME="$(date -Iseconds)" --build-arg "VERSION=${VERSION}" --progress plain --push ${TAGS} -f cgi/Dockerfile .
   tags: [ jitesoft, buildx, protected ]
