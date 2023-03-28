@@ -162,31 +162,31 @@ containerize:lighttpd:cgi:
     - docker buildx build --platform linux/amd64,linux/arm64 --build-arg BUILD_TIME="$(date -Iseconds)" --build-arg "VERSION=${VERSION}" --progress plain --push ${TAGS} -f cgi/Dockerfile .
   tags: [ jitesoft, buildx, protected ]
 
-sign:
-  extends: .sign
-  tags: [ jitesoft, protected, buildx ]
-  stage: sign
-  variables:
-    COSIGN_ANNOTATIONS: "-a sig=jitesoft-bot"
-    SIGN_TAGS: "${VERSION},latest"
-    SIGN_IMAGES: "jitesoft/lighttpd,${CI_REGISTRY_IMAGE},ghcr.io/jitesoft/lighttpd,${CI_REGISTRY_IMAGE}/cgi"
-  rules:
-    - if: "$BUILD"
-      when: on_success
-    - when: never
-
-sign:cgi:
-  extends: .sign
-  tags: [ jitesoft, protected, buildx ]
-  stage: sign
-  variables:
-    COSIGN_ANNOTATIONS: "-a sig=jitesoft-bot"
-    SIGN_TAGS: "${VERSION}-cgi,latest-cgi"
-    SIGN_IMAGES: "jitesoft/lighttpd,ghcr.io/jitesoft/lighttpd"
-  rules:
-    - if: "$BUILD"
-      when: on_success
-    - when: never
+# sign:
+#   extends: .sign
+#   tags: [ jitesoft, protected, buildx ]
+#   stage: sign
+#   variables:
+#     COSIGN_ANNOTATIONS: "-a sig=jitesoft-bot"
+#     SIGN_TAGS: "${VERSION},latest"
+#     SIGN_IMAGES: "jitesoft/lighttpd,${CI_REGISTRY_IMAGE},ghcr.io/jitesoft/lighttpd,${CI_REGISTRY_IMAGE}/cgi"
+#   rules:
+#     - if: "$BUILD"
+#       when: on_success
+#     - when: never
+#
+# sign:cgi:
+#   extends: .sign
+#   tags: [ jitesoft, protected, buildx ]
+#   stage: sign
+#   variables:
+#     COSIGN_ANNOTATIONS: "-a sig=jitesoft-bot"
+#     SIGN_TAGS: "${VERSION}-cgi,latest-cgi"
+#     SIGN_IMAGES: "jitesoft/lighttpd,ghcr.io/jitesoft/lighttpd"
+#   rules:
+#     - if: "$BUILD"
+#       when: on_success
+#     - when: never
 
 scan:
   stage: scan
