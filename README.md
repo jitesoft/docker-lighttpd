@@ -29,6 +29,7 @@ Images can be found at:
 * [Docker hub](https://hub.docker.com/r/jitesoft/lighttpd): `jitesoft/lighttpd`  
 * [GitLab](https://gitlab.com/jitesoft/dockerfiles/lighttpd): `registry.gitlab.com/jitesoft/dockerfiles/lighttpd`
 * [GitHub](https://github.com/orgs/jitesoft/packages/container/package/lighttpd): `ghcr.io/jitesoft/lighttpd`
+* [Quay](https://quay.io/repository/jitesoft/lighttpd) `quay.io/jitesoft/httpd`
 
 Dockerfiles can be found at [GitLab](https://gitlab.com/jitesoft/dockerfiles/lighttpd/blob/master/cgi/Dockerfile) and
 [GitHub](https://github.com/jitesoft/docker-lighttpd).
@@ -117,11 +118,8 @@ You can find the Lighttpd license [here](https://git.lighttpd.net/lighttpd/light
 
 Jitesoft images are built via GitLab CI on runners hosted by the following wonderful organisations:
 
-<a href="https://fosshost.org/">
-  <img src="https://raw.githubusercontent.com/jitesoft/misc/master/sponsors/fosshost.png" height="128" alt="Fosshost logo" />
-</a>
-<a href="https://www.aarch64.com/">
-  <img src="https://raw.githubusercontent.com/jitesoft/misc/master/sponsors/aarch64.png" height="128" alt="Aarch64 logo" />
+<a href="https://osuosl.org/" target="_blank" title="Oregon State University - Open Source Lab">
+    <img src="https://jitesoft.com/images/oslx128.webp" alt="Oregon State University - Open Source Lab">
 </a>
 
 _The companies above are not affiliated with Jitesoft or any Jitesoft Projects directly._
@@ -130,7 +128,7 @@ _The companies above are not affiliated with Jitesoft or any Jitesoft Projects d
 
 Sponsoring is vital for the further development and maintaining of open source.  
 Questions and sponsoring queries can be made by <a href="mailto:sponsor@jitesoft.com">email</a>.  
-If you wish to sponsor our projects, reach out to the email above or visit any of the following sites:
+If you wish to sponsor our projects, reach out to the email above or visit any of the following sites:  
 
 [Open Collective](https://opencollective.com/jitesoft-open-source)  
 [GitHub Sponsors](https://github.com/sponsors/jitesoft)  
