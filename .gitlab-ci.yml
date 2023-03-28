@@ -5,6 +5,7 @@ include:
     file: OCI/sign.yml
 
 stages:
+  - readme
   - download
   - build
   - containerize
@@ -12,6 +13,15 @@ stages:
   - sign
   - scan
   - cache
+
+update-readme:
+  stage: readme
+  extends: .readme-check.v2
+  variables:
+    PUSHRM_FILE: "$CI_PROJECT_DIR/README.md"
+    GIT_DEPTH: "3"
+    REGISTRIES: "quay.io/jitesoft/lighttpd,docker.io/jitesoft/lighttpd"
+  tags: [ protected ]
 
 check:
   stage: download
