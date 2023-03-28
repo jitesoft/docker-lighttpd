@@ -3,6 +3,8 @@ include:
     file: Scan/trivy.yml
   - project: jitesoft/gitlab-ci-lib
     file: OCI/sign.yml
+  - file: /OCI/push-readme.yml
+    project: jitesoft/gitlab-ci-lib
 
 stages:
   - readme
