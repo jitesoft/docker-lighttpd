@@ -93,6 +93,7 @@ download:
     - tar -xJhf lighttpd-${VERSION}.tar.xz --strip-components=1 -C src
   script:
     - cd src
+    - ./autogen.sh
     - ./configure --prefix=/usr/local --with-lua --with-openssl --with-ldap --with-brotli
     - make -j4
     - make install
