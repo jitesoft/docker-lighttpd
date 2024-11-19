@@ -80,7 +80,7 @@ download:
     - if: "$BUILD"
       when: on_success
     - when: never
-  image: registry.gitlab.com/jitesoft/dockerfiles/misc/buildbase:latest
+  image: registry.gitlab.com/jitesoft/dockerfiles/misc/buildbase/3.20:latest
   needs:
     - download
   stage: build
@@ -143,7 +143,7 @@ containerize:lighttpd:
     - mv lighttpd.conf out/
     - mv conf.d out/
     - TAGS=$(helper "${CI_REGISTRY_IMAGE},jitesoft/lighttpd,ghcr.io/jitesoft/lighttpd,quay.io/jitesoft/lighttpd" "latest,${VERSION}")
-    - docker buildx build --platform linux/amd64,linux/arm64 --progress plain --push ${TAGS} --build-arg VERSION=${VERSION} .
+    - docker buildx build --sbom=true --provenance=true --platform linux/amd64,linux/arm64 --progress plain --push ${TAGS} --build-arg VERSION=${VERSION} .
   tags: [ jitesoft, buildx, protected ]
 
 containerize:lighttpd:cgi:
@@ -160,34 +160,8 @@ containerize:lighttpd:cgi:
     - TAGS=$(helper taglist "${CI_REGISTRY_IMAGE}/cgi", "latest,${VERSION}")
     - OTAGS=$(helper taglist "jitesoft/lighttpd,ghcr.io/jitesoft/lighttpd,quay.io/jitesoft/lighttpd" "latest-cgi,${VERSION}-cgi,cgi")
     - TAGS="$TAGS $OTAGS"
-    - docker buildx build --platform linux/amd64,linux/arm64 --build-arg BUILD_TIME="$(date -Iseconds)" --build-arg "VERSION=${VERSION}" --progress plain --push ${TAGS} -f cgi/Dockerfile .
+    - docker buildx build --sbom=true --provenance=true --platform linux/amd64,linux/arm64 --build-arg BUILD_TIME="$(date -Iseconds)" --build-arg "VERSION=${VERSION}" --progress plain --push ${TAGS} -f cgi/Dockerfile .
   tags: [ jitesoft, buildx, protected ]
-
-# sign:
-#   extends: .sign
-#   tags: [ jitesoft, protected, buildx ]
-#   stage: sign
-#   variables:
-#     COSIGN_ANNOTATIONS: "-a sig=jitesoft-bot"
-#     SIGN_TAGS: "${VERSION},latest"
-#     SIGN_IMAGES: "jitesoft/lighttpd,${CI_REGISTRY_IMAGE},ghcr.io/jitesoft/lighttpd,${CI_REGISTRY_IMAGE}/cgi"
-#   rules:
-#     - if: "$BUILD"
-#       when: on_success
-#     - when: never
-#
-# sign:cgi:
-#   extends: .sign
-#   tags: [ jitesoft, protected, buildx ]
-#   stage: sign
-#   variables:
-#     COSIGN_ANNOTATIONS: "-a sig=jitesoft-bot"
-#     SIGN_TAGS: "${VERSION}-cgi,latest-cgi"
-#     SIGN_IMAGES: "jitesoft/lighttpd,ghcr.io/jitesoft/lighttpd"
-#   rules:
-#     - if: "$BUILD"
-#       when: on_success
-#     - when: never
 
 scan:
   stage: scan
