@@ -33,6 +33,7 @@ check:
     - if: '$CI_PIPELINE_SOURCE == "web"'
       when: always
     - when: never
+  image: registry.gitlab.com/jitesoft/dockerfiles/misc:latest
   script:
     - touch version.txt
     - VERSION=$(wget -qO- https://download.lighttpd.net/lighttpd/releases-1.4.x/ | grep -oP "(?<=<a href=\"lighttpd-)([0-9]{0,3}[.][0-9]{0,3}[.][0-9]{0,3})" | sort -r -u - | awk 'NR==1{print $1}')
