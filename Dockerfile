@@ -34,7 +34,7 @@ RUN --mount=type=bind,source=./out,target=/tmp/lighty-bin \
     adduser -u ${WWWDATA_GUID} -S www-data -G www-data \
  && cp /tmp/lighty-bin/entrypoint /tmp/lighty-bin/healthcheck /usr/local/bin \
  && chmod -R +x /usr/local/bin \
- && apk add --no-cache --virtual .req pcre2 brotli libressl3.8-libcrypto libress3.8-libssl \
+ && apk add --no-cache --virtual .req pcre2 brotli libressl3.8-libcrypto libressl3.8-libssl \
  && tar -xzhf /tmp/lighty-bin/lighttpd-${TARGETARCH}.tar.gz -C /usr/local \
  && mkdir -p /etc/lighttpd/conf.d /usr/local/lighttpd.d \
  && cp /tmp/lighty-bin/lighttpd.conf /etc/lighttpd \
