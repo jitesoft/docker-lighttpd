@@ -81,7 +81,7 @@ download:
     - if: "$BUILD"
       when: on_success
     - when: never
-  image: registry.gitlab.com/jitesoft/dockerfiles/misc/buildbase/3.20:latest
+  image: registry.gitlab.com/jitesoft/dockerfiles/misc/buildbase/3.23:latest
   needs:
     - download
   stage: build
